@@ -10,14 +10,13 @@
 
 /* Color definitions */
 #define LCD_BLACK 0x0000
-#define LCD_BLUE 0x1F00
-#define LCD_RED 0x00F8
-#define LCD_GREEN 0xE007
-#define LCD_CYAN 0xFF07
-#define LCD_MAGENTA 0x1FF8
-#define LCD_YELLOW 0xE0FF
+#define LCD_BLUE 0x001F
+#define LCD_RED 0xF800
+#define LCD_GREEN 0x07E0
+#define LCD_CYAN 0x07FF
+#define LCD_MAGENTA 0xF81F
+#define LCD_YELLOW 0xFFE0
 #define LCD_WHITE 0xFFFF
-#define LCD_GREY 0xc339
 
 #define LCD_RD_PORT GPIOB
 #define LCD_RD_PIN 5
