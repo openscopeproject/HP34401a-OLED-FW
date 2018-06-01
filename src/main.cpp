@@ -2,6 +2,7 @@
 
 #include "Adafruit_GFX.h" // Hardware-specific library
 #include "lcd.h"
+#include "annunciators.h"
 
 #define DEBUG
 
@@ -69,11 +70,9 @@ void setup() {
   tft.invertDisplay(true);
   tft.fillScreen(LCD_BLACK);
   tft.setRotation(1);
-  tft.setTextColor(LCD_CYAN, LCD_BLACK);
-  tft.setTextSize(5);
-  tft.setCursor(TXTX, TXTY);
   attachInterrupt(PB13, &sckInterrupt, RISING);
   digitalWrite(LED_BUILTIN, HIGH);
+  updateAnnunciators(0xffff);
 }
 
 char msg[100];
@@ -112,7 +111,7 @@ void loop() {
         printed++;
         break;
       case 0x8d:
-        // special semicolon that blinks previous char?
+      // special semicolon that blinks previous char?
       case 0x8c:
         tft.print(":");
         printed++;
@@ -140,7 +139,10 @@ void loop() {
     }
     if (packet) {
       packet_len++;
-      if (packet_len == 4) {
+      if (packet_len == 3) {
+        uint16_t state = input_buf[buf_len - 2];
+        state = (state << 8) + input_buf[buf_len - 3];
+        updateAnnunciators(state);
         packet_len = 0;
         buf_len = 0;
         packet = false;
@@ -149,8 +151,12 @@ void loop() {
     if (!packet && buf_len > 1 && input_buf[buf_len - 2] == 0x00 &&
         input_buf[buf_len - 1] == 0x7f) {
       printing = true;
+      tft.setTextColor(LCD_CYAN, LCD_BLACK);
+      tft.setTextSize(5);
+      tft.setCursor(TXTX, TXTY);
     }
-    if (!printing && input_buf[buf_len - 1] == 0x7f) {
+    if (!printing && buf_len > 1 && input_buf[buf_len - 2] == 0x7f &&
+        input_buf[buf_len - 1] == 0x00) {
       packet = true;
     }
   }

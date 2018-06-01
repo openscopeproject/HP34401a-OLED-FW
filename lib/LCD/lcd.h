@@ -1,7 +1,3 @@
-/**
- * This file contains all definitions for OSP lcd library.
- */
-
 /* Define to prevent recursive inclusion */
 #ifndef __LCD_H
 #define __LCD_H
