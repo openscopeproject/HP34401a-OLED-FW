@@ -4,7 +4,28 @@
 
 #include "Adafruit_GFX.h"
 
+/* Dimensions */
+#ifdef USE_SSD1322_DISPLAY
+#define LCD_DIMENSION_X 256
+#define LCD_DIMENSION_Y 64
+#else
+#define LCD_DIMENSION_X 320
+#define LCD_DIMENSION_Y 480
+#endif
+
 /* Color definitions */
+#ifdef USE_SSD1322_DISPLAY
+// 4 bit display
+#define LCD_BLACK 0x0
+#define LCD_BLUE 0x6
+#define LCD_RED 0x6
+#define LCD_GREEN 0x6
+#define LCD_CYAN 0xC
+#define LCD_MAGENTA 0xC
+#define LCD_YELLOW 0xC
+#define LCD_WHITE 0xF
+#else
+// 16 bit display
 #define LCD_BLACK 0x0000
 #define LCD_BLUE 0x001F
 #define LCD_RED 0xF800
@@ -13,7 +34,9 @@
 #define LCD_MAGENTA 0xF81F
 #define LCD_YELLOW 0xFFE0
 #define LCD_WHITE 0xFFFF
+#endif
 
+// Control pins
 #define LCD_RD_PORT GPIOB
 #define LCD_RD_PIN 5
 #define LCD_WR_PORT GPIOB
@@ -24,6 +47,7 @@
 #define LCD_CS_PIN 8
 #define LCD_RST_PORT GPIOB
 #define LCD_RST_PIN 9
+// Data pins are GPIOA[0-7]
 
 #define PIN_LOW(port, pin) ((port)->regs->BRR = 1 << (pin))
 #define PIN_HIGH(port, pin) ((port)->regs->BSRR = 1 << (pin))
@@ -93,44 +117,31 @@ class LCD : public Adafruit_GFX {
 public:
   LCD();
   void reset(void);
-  void begin(uint16_t ID);
+  void begin();
   virtual void drawPixel(int16_t x, int16_t y, uint16_t color);
   uint16_t color565(uint8_t r, uint8_t g, uint8_t b) {
     return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3);
   }
-  uint16_t readID(void);
   void WriteCmdData(uint8_t cmd, uint16_t dat);
+  virtual void setRotation(uint8_t r);
+  virtual void invertDisplay(bool i);
   virtual void fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
                         uint16_t color);
+  virtual void fillScreen(uint16_t color) {
+    fillRect(0, 0, _width, _height, color);
+  }
   virtual void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color) {
     fillRect(x, y, 1, h, color);
   }
   virtual void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color) {
     fillRect(x, y, w, 1, color);
   }
-  virtual void fillScreen(uint16_t color) {
-    fillRect(0, 0, _width, _height, color);
-  }
-  virtual void setRotation(uint8_t r);
-  virtual void invertDisplay(bool i);
-  int16_t readGRAM(int16_t x, int16_t y, uint16_t *block, int16_t w, int16_t h);
-  uint16_t readPixel(int16_t x, int16_t y) {
-    uint16_t color;
-    readGRAM(x, y, &color, 1, 1);
-    return color;
-  }
   void setAddrWindow(int16_t x, int16_t y, int16_t x1, int16_t y1);
-  void vertScroll(int16_t top, int16_t scrollines, int16_t offset);
   virtual void startWrite(void);
   virtual void endWrite(void);
 
-protected:
-  uint32_t readReg32(uint16_t reg);
-  uint32_t readReg40(uint16_t reg);
-
 private:
-  uint16_t _lcd_ID, _lcd_rev, _lcd_madctl, _lcd_drivOut, _MC, _MP, _MW, _SC,
-      _EC, _SP, _EP;
+  uint16_t _MC, _MP, _MW;
 };
 
 #endif /* __LCD_H */

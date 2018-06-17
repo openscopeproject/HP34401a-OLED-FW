@@ -1,14 +1,21 @@
 #include <Arduino.h>
 
 #include "Adafruit_GFX.h" // Hardware-specific library
-#include "lcd.h"
 #include "annunciators.h"
+#include "lcd.h"
 
-#define DEBUG
+//#define DEBUG
 
 #define MAX_SCK_DELAY 1500 // 1.5ms should be plenty for 100khz clock
+#ifdef USE_SSD1322_DISPLAY
+#define TXTX 2
+#define TXTY 10
+#define MAIN_FONT_SIZE 3
+#else
 #define TXTX 20
 #define TXTY 150
+#define MAIN_FONT_SIZE 5
+#endif
 
 LCD tft;
 int l = 0;
@@ -57,22 +64,22 @@ void setup() {
   pinMode(PB14, INPUT);
   pinMode(PB15, INPUT);
   pinMode(LED_BUILTIN, OUTPUT);
-  tft.reset();
-  uint16_t ID = tft.readID();
 #ifdef DEBUG
   Serial.begin(9600);
   while (!Serial)
     delay(100);
-  Serial.print("LCD ID = 0x");
-  Serial.println(ID, HEX);
 #endif
-  tft.begin(ID);
+  tft.begin();
+#ifndef USE_SSD1322_DISPLAY
   tft.invertDisplay(true);
-  tft.fillScreen(LCD_BLACK);
   tft.setRotation(1);
+#endif
+  tft.fillScreen(LCD_BLACK);
+  updateAnnunciators(0xffff);
+  delay(10000);
   attachInterrupt(PB13, &sckInterrupt, RISING);
   digitalWrite(LED_BUILTIN, HIGH);
-  updateAnnunciators(0xffff);
+
 }
 
 char msg[100];
@@ -97,7 +104,6 @@ void loop() {
     } else {
       Serial.println();
     }
-
 #endif
     buf_len++;
     if (printing) {
@@ -123,7 +129,7 @@ void loop() {
         zeros++;
         if (zeros == 2) {
           printing = false;
-          for (int i = 0; i < 15 - printed; i++) {
+          for (int i = 0; i < 14 - printed; i++) {
             tft.print(" ");
           }
           tft.setCursor(TXTX, TXTY);
@@ -151,8 +157,9 @@ void loop() {
     if (!packet && buf_len > 1 && input_buf[buf_len - 2] == 0x00 &&
         input_buf[buf_len - 1] == 0x7f) {
       printing = true;
+      tft.setFont(NULL);
       tft.setTextColor(LCD_CYAN, LCD_BLACK);
-      tft.setTextSize(5);
+      tft.setTextSize(MAIN_FONT_SIZE);
       tft.setCursor(TXTX, TXTY);
     }
     if (!printing && buf_len > 1 && input_buf[buf_len - 2] == 0x7f &&
