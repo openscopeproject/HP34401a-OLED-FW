@@ -2,6 +2,7 @@
 
 #include "Adafruit_GFX.h" // Hardware-specific library
 #include "annunciators.h"
+#include "bargraph.h"
 #include "lcd.h"
 
 //#define DEBUG
@@ -76,15 +77,17 @@ void setup() {
 #endif
   tft.fillScreen(LCD_BLACK);
   updateAnnunciators(0xffff);
-  delay(10000);
+  // delay(10000);
   attachInterrupt(PB13, &sckInterrupt, RISING);
   digitalWrite(LED_BUILTIN, HIGH);
-
+  enableBar();
 }
 
 char msg[100];
 bool printing, packet;
-uint8_t printed, zeros, packet_len;
+uint8_t printed, zeros, packet_len, strstart;
+int16_t barvalue = 0;
+BarStyle style;
 
 void loop() {
   if (byte_not_read) {
@@ -136,6 +139,19 @@ void loop() {
           buf_len = 0;
           printed = 0;
           zeros = 0;
+
+          barvalue = 0;
+          style = isdigit(input_buf[2]) ? POSITIVE : FULLSCALE;
+          uint16_t st, c;
+          for (st = ((style == POSITIVE) ? strstart : strstart + 1), c = 0;
+               c < ((style == POSITIVE) ? 4 : 3) && st < 8; st++) {
+            if (isdigit(input_buf[st])) {
+              barvalue = 10 * barvalue + input_buf[st] - '0';
+              c++;
+            }
+          }
+          if (style == FULLSCALE && input_buf[2] == '-') barvalue = -barvalue;
+          setValue(style, barvalue);
         }
         break;
       default:
@@ -156,6 +172,7 @@ void loop() {
     }
     if (!packet && buf_len > 1 && input_buf[buf_len - 2] == 0x00 &&
         input_buf[buf_len - 1] == 0x7f) {
+      strstart = buf_len;
       printing = true;
       tft.setFont(NULL);
       tft.setTextColor(LCD_CYAN, LCD_BLACK);

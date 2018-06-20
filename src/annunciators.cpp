@@ -4,7 +4,7 @@
 #ifdef USE_SSD1322_DISPLAY
 #define X_OFFSET 0
 #define X_MULT 20
-#define Y_OFFSET 40
+#define Y_OFFSET 38
 #define GLYPH_X_OFFSET 200
 #define GLYPH_Y_OFFSET 20
 #define GLYPH_Y_MULT 10
