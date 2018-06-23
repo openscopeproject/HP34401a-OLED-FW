@@ -15,7 +15,7 @@
 
 /* Color definitions */
 #ifdef USE_SSD1322_DISPLAY
-// 4 bit display
+// 4 bit greyscale display
 #define LCD_BLACK 0x0
 #define LCD_BLUE 0x6
 #define LCD_RED 0x6
@@ -25,7 +25,7 @@
 #define LCD_YELLOW 0xC
 #define LCD_WHITE 0xF
 #else
-// 16 bit display
+// 16 bit RGB display
 #define LCD_BLACK 0x0000
 #define LCD_BLUE 0x001F
 #define LCD_RED 0xF800

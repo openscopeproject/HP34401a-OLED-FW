@@ -1,17 +1,6 @@
 #include "bargraph.h"
 #include "lcd.h"
-
-#define SCALE_OFFSET_Y 50
-#define SCALE_HEIGHT 5
-
-#define BAR_OFFSET_X 8
-#define BAR_CENTER_X 128
-#define BAR_OFFSET_Y 58
-#define BAR_HEIGHT 7
-#define BAR_MAX_WIDTH 241
-
-#define BAR_COLOR 0x7
-#define SCALE_COLOR 0x7
+#include "config.h"
 
 bool enabled;
 bool bar_drawn;
@@ -40,7 +29,7 @@ void drawScale(BarStyle style) {
     for (x = BAR_OFFSET_X; x <= BAR_OFFSET_X + BAR_MAX_WIDTH; x += 20)
       tft.drawFastVLine(x, SCALE_OFFSET_Y + 2, 1, SCALE_COLOR);
     for (x = BAR_OFFSET_X; x <= BAR_OFFSET_X + BAR_MAX_WIDTH; x += 50)
-      tft.drawFastVLine(x, SCALE_OFFSET_Y, 2, SCALE_COLOR);
+      tft.drawFastVLine(x, SCALE_OFFSET_Y, 3, SCALE_COLOR);
     break;
   }
   case FULLSCALE: {

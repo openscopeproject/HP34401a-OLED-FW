@@ -4,19 +4,7 @@
 #include "annunciators.h"
 #include "bargraph.h"
 #include "lcd.h"
-
-//#define DEBUG
-
-#define MAX_SCK_DELAY 1500 // 1.5ms should be plenty for 100khz clock
-#ifdef USE_SSD1322_DISPLAY
-#define TXTX 2
-#define TXTY 10
-#define MAIN_FONT_SIZE 3
-#else
-#define TXTX 20
-#define TXTY 150
-#define MAIN_FONT_SIZE 5
-#endif
+#include "config.h"
 
 LCD tft;
 int l = 0;
