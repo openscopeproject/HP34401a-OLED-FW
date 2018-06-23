@@ -1,23 +1,6 @@
 #include "annunciators.h"
 #include "lcd.h"
-
-#ifdef USE_SSD1322_DISPLAY
-#define X_OFFSET 0
-#define X_MULT 20
-#define Y_OFFSET 38
-#define GLYPH_X_OFFSET 200
-#define GLYPH_Y_OFFSET 20
-#define GLYPH_Y_MULT 10
-#define GLYPH_FONT_SIZE 1
-#else
-#define X_OFFSET 0
-#define X_MULT 40
-#define Y_OFFSET 200
-#define GLYPH_X_OFFSET 450
-#define GLYPH_Y_OFFSET 180
-#define GLYPH_Y_MULT 15
-#define GLYPH_FONT_SIZE 2
-#endif
+#include "config.h"
 
 uint16_t last_state;
 extern LCD tft;
