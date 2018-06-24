@@ -1,7 +1,7 @@
-#include "decoder.h"
+#include "annunciators.h"
 #include "bargraph.h"
 #include "config.h"
-#include "annunciators.h"
+#include "decoder.h"
 #include "lcd.h"
 
 // PB13 - SCK
@@ -22,6 +22,9 @@ bool printing, packet;
 uint8_t printed, zeros, packet_len, strstart;
 int16_t barvalue = 0;
 BarStyle style;
+
+uint16_t last_fps;
+volatile uint16_t fps, fpsc;
 
 extern LCD tft;
 
@@ -46,6 +49,11 @@ void sckInterrupt() {
     byte_len = 0;
     byte_ready = true;
   }
+}
+
+void fpsInterrupt() {
+  fps = fpsc;
+  fpsc = 0;
 }
 
 void process() {
@@ -109,8 +117,18 @@ void process() {
               c++;
             }
           }
-          if (style == FULLSCALE && input_buf[2] == '-') barvalue = -barvalue;
+          if (style == FULLSCALE && input_buf[2] == '-')
+            barvalue = -barvalue;
           setValue(style, barvalue);
+          fpsc++;
+          if (fps != last_fps) {
+            last_fps = fps;
+            tft.setCursor(FPSX, FPSY);
+            tft.setTextSize(1);
+            tft.print(fps);
+            if (fps < 10)
+              tft.print(' ');
+          }
         }
         break;
       default:

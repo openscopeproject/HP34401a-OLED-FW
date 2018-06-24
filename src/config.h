@@ -11,10 +11,14 @@ This file contains configuration constants.
 #define TXTX 2
 #define TXTY 10
 #define MAIN_FONT_SIZE 3
+#define FPSX 240
+#define FPSY 0
 #else // ILI9481 based 320x480 lcd display
 #define TXTX 20
 #define TXTY 150
 #define MAIN_FONT_SIZE 5
+#define FPSX 240
+#define FPSY 0
 #endif
 
 // Annunciators and glyphs

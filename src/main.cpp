@@ -27,7 +27,10 @@ void setup() {
 #endif
   tft.fillScreen(LCD_BLACK);
   enableBar();
-  // Start sniffing
+  Timer4.setMode(TIMER_CH1, TIMER_OUTPUTCOMPARE);
+  Timer4.setPeriod(1000000); // in microseconds
+  Timer4.setCompare(TIMER_CH1, 1);      // overflow might be small
+  Timer4.attachInterrupt(TIMER_CH1, &fpsInterrupt);  // Start sniffing
   attachInterrupt(PB13, &sckInterrupt, RISING);
   digitalWrite(LED_BUILTIN, HIGH);
 }

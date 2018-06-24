@@ -12,6 +12,7 @@ on both input and output data lines of the bus at the same time.
 #include "Arduino.h"
 
 void sckInterrupt();
+void fpsInterrupt();
 void process();
 
 #endif
