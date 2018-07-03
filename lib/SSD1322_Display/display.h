@@ -1,6 +1,6 @@
 /* Define to prevent recursive inclusion */
-#ifndef __LCD_H
-#define __LCD_H
+#ifndef __DISPLAY_H
+#define __DISPLAY_H
 
 #include "Adafruit_GFX.h"
 
@@ -113,9 +113,9 @@
     write8(l);                                                                 \
   }
 
-class LCD : public Adafruit_GFX {
+class Display : public Adafruit_GFX {
 public:
-  LCD();
+  Display();
   void reset(void);
   void begin();
   virtual void drawPixel(int16_t x, int16_t y, uint16_t color);
@@ -144,4 +144,4 @@ private:
   uint16_t _MC, _MP, _MW;
 };
 
-#endif /* __LCD_H */
+#endif /* __DISPLAY_H */

@@ -1,10 +1,10 @@
 #include <Arduino.h>
 
 #include "decoder.h"
-#include "lcd.h"
+#include "display.h"
 #include "bargraph.h"
 
-LCD tft;
+Display display;
 
 void setup() {
   // Configure pins
@@ -20,17 +20,18 @@ void setup() {
   while (!Serial)
     delay(100);
 #endif
-  tft.begin();
+  display.begin();
 #ifndef USE_SSD1322_DISPLAY
-  tft.invertDisplay(true);
-  tft.setRotation(1);
+  display.invertDisplay(true);
+  display.setRotation(1);
 #endif
-  tft.fillScreen(LCD_BLACK);
+  display.fillScreen(LCD_BLACK);
   enableBar();
-  Timer4.setMode(TIMER_CH1, TIMER_OUTPUTCOMPARE);
+  Timer4.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
   Timer4.setPeriod(1000000); // in microseconds
   Timer4.setCompare(TIMER_CH1, 1);      // overflow might be small
-  Timer4.attachInterrupt(TIMER_CH1, &fpsInterrupt);  // Start sniffing
+  Timer4.attachInterrupt(TIMER_CH1, &fpsInterrupt);
+  // Start sniffing
   attachInterrupt(PB13, &sckInterrupt, RISING);
   digitalWrite(LED_BUILTIN, HIGH);
 }

@@ -1,5 +1,5 @@
 #include "bargraph.h"
-#include "lcd.h"
+#include "display.h"
 #include "config.h"
 
 bool enabled;
@@ -7,14 +7,14 @@ bool bar_drawn;
 BarStyle current_style;
 int16_t current_value;
 
-extern LCD tft;
+extern Display display;
 
 void clear() {
   // Clear scale
-  tft.fillRect(BAR_OFFSET_X, SCALE_OFFSET_Y, BAR_MAX_WIDTH, SCALE_HEIGHT,
+  display.fillRect(BAR_OFFSET_X, SCALE_OFFSET_Y, BAR_MAX_WIDTH, SCALE_HEIGHT,
                LCD_BLACK);
   // Clear bar
-  tft.fillRect(BAR_OFFSET_X, BAR_OFFSET_Y, BAR_MAX_WIDTH, BAR_HEIGHT,
+  display.fillRect(BAR_OFFSET_X, BAR_OFFSET_Y, BAR_MAX_WIDTH, BAR_HEIGHT,
                LCD_BLACK);
   bar_drawn = false;
   current_value = 0;
@@ -25,32 +25,32 @@ void drawScale(BarStyle style) {
   switch (style) {
   case POSITIVE: {
     for (x = BAR_OFFSET_X; x <= BAR_OFFSET_X + BAR_MAX_WIDTH; x += 10)
-      tft.drawFastVLine(x, SCALE_OFFSET_Y + 3, 2, SCALE_COLOR);
+      display.drawFastVLine(x, SCALE_OFFSET_Y + 3, 2, SCALE_COLOR);
     for (x = BAR_OFFSET_X; x <= BAR_OFFSET_X + BAR_MAX_WIDTH; x += 20)
-      tft.drawFastVLine(x, SCALE_OFFSET_Y + 2, 1, SCALE_COLOR);
+      display.drawFastVLine(x, SCALE_OFFSET_Y + 2, 1, SCALE_COLOR);
     for (x = BAR_OFFSET_X; x <= BAR_OFFSET_X + BAR_MAX_WIDTH; x += 50)
-      tft.drawFastVLine(x, SCALE_OFFSET_Y, 3, SCALE_COLOR);
+      display.drawFastVLine(x, SCALE_OFFSET_Y, 3, SCALE_COLOR);
     break;
   }
   case FULLSCALE: {
   }
     for (x = BAR_OFFSET_X; x <= BAR_OFFSET_X + BAR_MAX_WIDTH; x += 5)
-      tft.drawFastVLine(x, SCALE_OFFSET_Y + 3, 2, SCALE_COLOR);
+      display.drawFastVLine(x, SCALE_OFFSET_Y + 3, 2, SCALE_COLOR);
     for (x = BAR_OFFSET_X; x <= BAR_OFFSET_X + BAR_MAX_WIDTH; x += 10)
-      tft.drawFastVLine(x, SCALE_OFFSET_Y + 2, 1, SCALE_COLOR);
+      display.drawFastVLine(x, SCALE_OFFSET_Y + 2, 1, SCALE_COLOR);
     for (x = BAR_OFFSET_X + 20; x <= BAR_OFFSET_X + BAR_MAX_WIDTH; x += 50)
-      tft.drawFastVLine(x, SCALE_OFFSET_Y, 2, SCALE_COLOR);
+      display.drawFastVLine(x, SCALE_OFFSET_Y, 2, SCALE_COLOR);
     break;
   }
   current_style = style;
 }
 
 void drawBarPortion(uint8_t start, uint8_t width) {
-  tft.fillRect(start, BAR_OFFSET_Y, width, BAR_HEIGHT, BAR_COLOR);
+  display.fillRect(start, BAR_OFFSET_Y, width, BAR_HEIGHT, BAR_COLOR);
 }
 
 void clearBarPortion(uint8_t start, uint8_t width) {
-  tft.fillRect(start, BAR_OFFSET_Y, width, BAR_HEIGHT, LCD_BLACK);
+  display.fillRect(start, BAR_OFFSET_Y, width, BAR_HEIGHT, LCD_BLACK);
 }
 
 void drawBar(int16_t value) {

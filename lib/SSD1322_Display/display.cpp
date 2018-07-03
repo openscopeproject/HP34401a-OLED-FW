@@ -1,4 +1,4 @@
-#include "lcd.h"
+#include "display.h"
 
 #ifndef pgm_read_byte
 #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
@@ -14,13 +14,13 @@ uint8_t framebuffer[256 * 64 / 2] = {0};
 
 #endif
 
-LCD::LCD() : Adafruit_GFX(LCD_DIMENSION_X, LCD_DIMENSION_Y) {}
+Display::Display() : Adafruit_GFX(LCD_DIMENSION_X, LCD_DIMENSION_Y) {}
 
-void LCD::startWrite() { CS_ACTIVE; }
+void Display::startWrite() { CS_ACTIVE; }
 
-void LCD::endWrite() { CS_IDLE; }
+void Display::endWrite() { CS_IDLE; }
 
-void LCD::reset() {
+void Display::reset() {
   SET_WRITE_DIRECTION();
   CS_IDLE;
   RD_HIGH;
@@ -33,7 +33,7 @@ void LCD::reset() {
   delay(100);
 }
 
-void LCD::WriteCmdData(uint8_t cmd, uint16_t dat) {
+void Display::WriteCmdData(uint8_t cmd, uint16_t dat) {
   WriteCmd(cmd);
   WriteData(dat);
 }
@@ -65,7 +65,7 @@ static inline void WriteCmdParam2(uint8_t cmd, uint8_t d1, uint8_t d2) {
   write8(d2);
 }
 
-void LCD::drawPixel(int16_t x, int16_t y, uint16_t color) {
+void Display::drawPixel(int16_t x, int16_t y, uint16_t color) {
   // MCUFRIEND just plots at edge if you try to write outside of the box:
   if (x < 0 || y < 0 || x >= width() || y >= height())
     return;
@@ -87,7 +87,7 @@ void LCD::drawPixel(int16_t x, int16_t y, uint16_t color) {
 #endif
 }
 
-void LCD::setRotation(uint8_t r) {
+void Display::setRotation(uint8_t r) {
 #ifdef USE_SSD1322_DISPLAY
   // ignore rotation for now
   _MC = 0x15; // Set column address
@@ -126,7 +126,7 @@ void LCD::setRotation(uint8_t r) {
 #endif
 }
 
-void LCD::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
+void Display::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
   int16_t end;
   if (w < 0) {
     w = -w;
@@ -154,7 +154,6 @@ void LCD::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
   WriteCmd(_MW);
   CD_DATA;
 #ifdef USE_SSD1322_DISPLAY
-  uint8_t c = color | (color << 4);
   uint16_t p = (256 * y + x) / 2;
   p = p & ~1;
   for (int i = 0; i < h; i++) {
@@ -198,7 +197,7 @@ void LCD::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
   CS_IDLE;
 }
 
-void LCD::invertDisplay(bool i) {
+void Display::invertDisplay(bool i) {
   CS_ACTIVE;
 #ifdef USE_SSD1322_DISPLAY
   WriteCmdParamN(i ? 0xA7 : 0xA6, 0, NULL);
@@ -208,7 +207,7 @@ void LCD::invertDisplay(bool i) {
   CS_IDLE;
 }
 
-void LCD::setAddrWindow(int16_t x, int16_t y, int16_t x1, int16_t y1) {
+void Display::setAddrWindow(int16_t x, int16_t y, int16_t x1, int16_t y1) {
 #ifdef USE_SSD1322_DISPLAY
   WriteCmdParam2(_MC, PANEL_OFFSET + x / 4, PANEL_OFFSET + x1 / 4);
   WriteCmdParam2(_MP, y, y1);
@@ -218,14 +217,14 @@ void LCD::setAddrWindow(int16_t x, int16_t y, int16_t x1, int16_t y1) {
 #endif
 }
 
-#define TFTLCD_DELAY8 0x7F
+#define DISPLAYLCD_DELAY8 0x7F
 static void init_table(const uint8_t *table, int16_t size) {
   uint16_t p = 0;
   uint8_t dat[24]; // R61526 has GAMMA[22]
   while (size > 0) {
     uint8_t cmd = table[p++];
     uint8_t len = table[p++];
-    if (cmd == TFTLCD_DELAY8) {
+    if (cmd == DISPLAYLCD_DELAY8) {
       delay(len);
       len = 0;
     } else {
@@ -267,7 +266,7 @@ static const uint8_t wake_on[] = {
 // ILI9481 init commands
 static const uint8_t reset_off[] = {
     0x01, 0,            // Soft Reset
-    TFTLCD_DELAY8, 100, // .kbv will power up with ONLY reset, sleep out,
+    DISPLAYLCD_DELAY8, 100, // .kbv will power up with ONLY reset, sleep out,
                         // display on
     0x28, 0,            // Display Off
     0x3A, 1, 0x55,      // Pixel read=565, write=565.
@@ -292,12 +291,12 @@ static const uint8_t table8_ads[] = {
 };
 static const uint8_t wake_on[] = {
     0x11,          0,   // Sleep Out
-    TFTLCD_DELAY8, 100, // 100ms
+    DISPLAYLCD_DELAY8, 100, // 100ms
     0x29,          0,   // Display On
 };
 #endif
 
-void LCD::begin() {
+void Display::begin() {
   int16_t *p16; // so we can "write" to a const protected variable.
   p16 = (int16_t *)&HEIGHT;
   *p16 = 480;

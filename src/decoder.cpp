@@ -2,7 +2,7 @@
 #include "bargraph.h"
 #include "config.h"
 #include "decoder.h"
-#include "lcd.h"
+#include "display.h"
 
 // PB13 - SCK
 // PB14 - MISO
@@ -26,7 +26,7 @@ BarStyle style;
 uint16_t last_fps;
 volatile uint16_t fps, fpsc;
 
-extern LCD tft;
+extern Display display;
 
 void sckInterrupt() {
   // mid byte power on detection
@@ -79,17 +79,17 @@ void process() {
     if (printing) {
       switch (input_buf[buf_len - 1]) {
       case 0x84:
-        tft.print(".");
+        display.print(".");
         printed++;
         break;
       case 0x86:
-        tft.print(",");
+        display.print(",");
         printed++;
         break;
       case 0x8d:
       // special semicolon that blinks previous char?
       case 0x8c:
-        tft.print(":");
+        display.print(":");
         printed++;
         break;
       case 0x81:
@@ -100,9 +100,9 @@ void process() {
         if (zeros == 2) {
           printing = false;
           for (int i = 0; i < 14 - printed; i++) {
-            tft.print(" ");
+            display.print(" ");
           }
-          tft.setCursor(TXTX, TXTY);
+          display.setCursor(TXTX, TXTY);
           buf_len = 0;
           printed = 0;
           zeros = 0;
@@ -123,16 +123,16 @@ void process() {
           fpsc++;
           if (fps != last_fps) {
             last_fps = fps;
-            tft.setCursor(FPSX, FPSY);
-            tft.setTextSize(1);
-            tft.print(fps);
+            display.setCursor(FPSX, FPSY);
+            display.setTextSize(1);
+            display.print(fps);
             if (fps < 10)
-              tft.print(' ');
+              display.print(' ');
           }
         }
         break;
       default:
-        tft.print((char)input_buf[buf_len - 1]);
+        display.print((char)input_buf[buf_len - 1]);
         printed++;
       }
     }
@@ -151,10 +151,10 @@ void process() {
         input_buf[buf_len - 1] == 0x7f) {
       strstart = buf_len;
       printing = true;
-      tft.setFont(NULL);
-      tft.setTextColor(LCD_CYAN, LCD_BLACK);
-      tft.setTextSize(MAIN_FONT_SIZE);
-      tft.setCursor(TXTX, TXTY);
+      display.setFont(NULL);
+      display.setTextColor(LCD_CYAN, LCD_BLACK);
+      display.setTextSize(MAIN_FONT_SIZE);
+      display.setCursor(TXTX, TXTY);
     }
     if (!printing && buf_len > 1 && input_buf[buf_len - 2] == 0x7f &&
         input_buf[buf_len - 1] == 0x00) {
