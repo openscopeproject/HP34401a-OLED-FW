@@ -16,7 +16,7 @@ void update(uint16_t state) {
   uint16_t diff = (last_state ^ state);
   uint16_t tstate = state;
   display.setTextSize(GLYPH_FONT_SIZE);
-  display.setTextColor(LCD_YELLOW, LCD_BLACK);
+  display.setTextColor(LCD_LIGHT_GRAY, LCD_BLACK);
   for (int i = 0; i < 11; i++) {
     if (diff & 1) {
       display.setCursor(X_OFFSET + i * X_MULT, Y_OFFSET);
@@ -50,7 +50,7 @@ void update(uint16_t state) {
 
 void toggleShift() {
   display.setTextSize(2);
-  display.setTextColor(LCD_YELLOW, LCD_BLACK);
+  display.setTextColor(LCD_LIGHT_GRAY, LCD_BLACK);
   display.setCursor(X_OFFSET + 11 * X_MULT, Y_OFFSET);
   if (last_state & (1 << 11)) {
     display.print("     ");

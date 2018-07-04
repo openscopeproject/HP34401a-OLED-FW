@@ -59,6 +59,9 @@ void fpsInterrupt() {
 }
 
 void startSniffing() {
+  pinMode(PB13, INPUT);
+  pinMode(PB14, INPUT);
+  pinMode(PB15, INPUT);
   Timer4.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
   Timer4.setPeriod(1000000);       // in microseconds
   Timer4.setCompare(TIMER_CH1, 1); // overflow might be small
@@ -164,7 +167,7 @@ void process() {
       strstart = buf_len;
       printing = true;
       display.setFont(NULL);
-      display.setTextColor(LCD_CYAN, LCD_BLACK);
+      display.setTextColor(LCD_WHITE, LCD_BLACK);
       display.setTextSize(MAIN_FONT_SIZE);
       display.setCursor(TXTX, TXTY);
     }

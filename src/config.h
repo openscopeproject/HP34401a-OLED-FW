@@ -7,22 +7,13 @@ This file contains configuration constants.
 
 #define MAX_SCK_DELAY 1500 // 1.5ms should be plenty for 100khz clock
 
-#ifdef USE_SSD1322_DISPLAY // OLED panel 256x64
 #define TXTX 2
 #define TXTY 10
 #define MAIN_FONT_SIZE 3
 #define FPSX 240
 #define FPSY 0
-#else // ILI9481 based 320x480 lcd display
-#define TXTX 20
-#define TXTY 150
-#define MAIN_FONT_SIZE 5
-#define FPSX 240
-#define FPSY 0
-#endif
 
 // Annunciators and glyphs
-#ifdef USE_SSD1322_DISPLAY
 #define X_OFFSET 0
 #define X_MULT 20
 #define Y_OFFSET 38
@@ -30,15 +21,6 @@ This file contains configuration constants.
 #define GLYPH_Y_OFFSET 20
 #define GLYPH_Y_MULT 10
 #define GLYPH_FONT_SIZE 1
-#else
-#define X_OFFSET 0
-#define X_MULT 40
-#define Y_OFFSET 200
-#define GLYPH_X_OFFSET 450
-#define GLYPH_Y_OFFSET 180
-#define GLYPH_Y_MULT 15
-#define GLYPH_FONT_SIZE 2
-#endif
 
 // Bar graph constants
 #define SCALE_OFFSET_Y 50

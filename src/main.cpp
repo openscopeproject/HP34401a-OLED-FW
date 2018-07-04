@@ -17,10 +17,6 @@ void setup() {
     delay(100);
 #endif
   display.begin();
-#ifndef USE_SSD1322_DISPLAY
-  display.invertDisplay(true);
-  display.setRotation(1);
-#endif
   display.fillScreen(LCD_BLACK);
   Bargraph::enable();
   Decoder::startSniffing();
