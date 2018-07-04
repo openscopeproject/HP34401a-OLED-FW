@@ -14,6 +14,15 @@ uint8_t framebuffer[256 * 64 / 2] = {0};
 
 #endif
 
+void displaySetup() {
+  // Configure pins
+  GPIOB->regs->CRL = 0x33333333;
+  GPIOB->regs->CRH = 0x33333333;
+  pinMode(PB13, INPUT);
+  pinMode(PB14, INPUT);
+  pinMode(PB15, INPUT);
+}
+
 Display::Display() : Adafruit_GFX(LCD_DIMENSION_X, LCD_DIMENSION_Y) {}
 
 void Display::startWrite() { CS_ACTIVE; }

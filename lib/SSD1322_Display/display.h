@@ -113,6 +113,8 @@
     write8(l);                                                                 \
   }
 
+void displaySetup();
+
 class Display : public Adafruit_GFX {
 public:
   Display();

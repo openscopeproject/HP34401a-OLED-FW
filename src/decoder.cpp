@@ -28,6 +28,14 @@ volatile uint16_t fps, fpsc;
 
 extern Display display;
 
+void startSniffing() {
+  Timer4.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
+  Timer4.setPeriod(1000000); // in microseconds
+  Timer4.setCompare(TIMER_CH1, 1);      // overflow might be small
+  Timer4.attachInterrupt(TIMER_CH1, &fpsInterrupt);
+  attachInterrupt(PB13, &sckInterrupt, RISING);
+}
+
 void sckInterrupt() {
   // mid byte power on detection
   now_us = micros();
