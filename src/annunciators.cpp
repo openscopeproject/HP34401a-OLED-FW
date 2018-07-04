@@ -1,15 +1,18 @@
 #include "annunciators.h"
-#include "display.h"
 #include "config.h"
+#include "display.h"
+
+extern Display display;
+
+namespace Annunciators {
 
 uint16_t last_state;
-extern Display display;
 
 const char annunciators_text[][6] = {"  *",  "Adrs",  " Rmt",  " Man", "Trig",
                                      "Hold", " Mem",  "Ratio", "Math", "ERROR",
                                      "Rear", "Shift", "DIO",   "CON",  "4W"};
 
-void updateAnnunciators(uint16_t state) {
+void update(uint16_t state) {
   uint16_t diff = (last_state ^ state);
   uint16_t tstate = state;
   display.setTextSize(GLYPH_FONT_SIZE);
@@ -31,7 +34,8 @@ void updateAnnunciators(uint16_t state) {
   tstate >>= 1;
   for (int i = 12; i < 15; i++) {
     if (diff & 1) {
-      display.setCursor(GLYPH_X_OFFSET, GLYPH_Y_OFFSET - (i - 12) * GLYPH_Y_MULT);
+      display.setCursor(GLYPH_X_OFFSET,
+                        GLYPH_Y_OFFSET - (i - 12) * GLYPH_Y_MULT);
       if (tstate & 1) {
         display.print(annunciators_text[i]);
       } else {
@@ -55,3 +59,5 @@ void toggleShift() {
   }
   last_state ^= 1 << 11;
 }
+
+} // namespace

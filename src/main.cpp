@@ -22,10 +22,10 @@ void setup() {
   display.setRotation(1);
 #endif
   display.fillScreen(LCD_BLACK);
-  enableBar();
-  startSniffing();
+  Bargraph::enable();
+  Decoder::startSniffing();
 }
 
 void loop() {
-  process();
+  Decoder::process();
 }

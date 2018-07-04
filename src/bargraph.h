@@ -2,13 +2,16 @@
 #define __BARGRAPH_H
 #include "Arduino.h"
 
+namespace Bargraph {
+
 enum BarStyle {
   FULLSCALE,
   POSITIVE
 };
 
-void enableBar(void);
-void disableBar(void);
+void enable(void);
+void disable(void);
 void setValue(BarStyle style, int16_t value);
+}
 
 #endif

@@ -8,6 +8,10 @@
 // PB14 - MISO
 // PB15 - MOSI
 
+extern Display display;
+
+namespace Decoder {
+
 uint8_t byte_len;
 volatile bool byte_ready;
 volatile uint8_t input_byte, output_byte, input_acc, output_acc;
@@ -21,20 +25,10 @@ char msg[100];
 bool printing, packet;
 uint8_t printed, zeros, packet_len, strstart;
 int16_t barvalue = 0;
-BarStyle style;
+Bargraph::BarStyle style;
 
 uint16_t last_fps;
 volatile uint16_t fps, fpsc;
-
-extern Display display;
-
-void startSniffing() {
-  Timer4.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
-  Timer4.setPeriod(1000000); // in microseconds
-  Timer4.setCompare(TIMER_CH1, 1);      // overflow might be small
-  Timer4.attachInterrupt(TIMER_CH1, &fpsInterrupt);
-  attachInterrupt(PB13, &sckInterrupt, RISING);
-}
 
 void sckInterrupt() {
   // mid byte power on detection
@@ -62,6 +56,14 @@ void sckInterrupt() {
 void fpsInterrupt() {
   fps = fpsc;
   fpsc = 0;
+}
+
+void startSniffing() {
+  Timer4.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
+  Timer4.setPeriod(1000000);       // in microseconds
+  Timer4.setCompare(TIMER_CH1, 1); // overflow might be small
+  Timer4.attachInterrupt(TIMER_CH1, &fpsInterrupt);
+  attachInterrupt(PB13, &sckInterrupt, RISING);
 }
 
 void process() {
@@ -116,18 +118,20 @@ void process() {
           zeros = 0;
 
           barvalue = 0;
-          style = isdigit(input_buf[2]) ? POSITIVE : FULLSCALE;
+          style =
+              isdigit(input_buf[2]) ? Bargraph::POSITIVE : Bargraph::FULLSCALE;
           uint16_t st, c;
-          for (st = ((style == POSITIVE) ? strstart : strstart + 1), c = 0;
-               c < ((style == POSITIVE) ? 4 : 3) && st < 8; st++) {
+          for (st = ((style == Bargraph::POSITIVE) ? strstart : strstart + 1),
+              c = 0;
+               c < ((style == Bargraph::POSITIVE) ? 4 : 3) && st < 8; st++) {
             if (isdigit(input_buf[st])) {
               barvalue = 10 * barvalue + input_buf[st] - '0';
               c++;
             }
           }
-          if (style == FULLSCALE && input_buf[2] == '-')
+          if (style == Bargraph::FULLSCALE && input_buf[2] == '-')
             barvalue = -barvalue;
-          setValue(style, barvalue);
+          Bargraph::setValue(style, barvalue);
           fpsc++;
           if (fps != last_fps) {
             last_fps = fps;
@@ -149,7 +153,7 @@ void process() {
       if (packet_len == 3) {
         uint16_t state = input_buf[buf_len - 2];
         state = (state << 8) + input_buf[buf_len - 3];
-        updateAnnunciators(state);
+        Annunciators::update(state);
         packet_len = 0;
         buf_len = 0;
         packet = false;
@@ -170,3 +174,5 @@ void process() {
     }
   }
 }
+
+} // namespace

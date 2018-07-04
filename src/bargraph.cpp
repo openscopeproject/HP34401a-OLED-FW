@@ -1,21 +1,23 @@
 #include "bargraph.h"
-#include "display.h"
 #include "config.h"
+#include "display.h"
+
+extern Display display;
+
+namespace Bargraph {
 
 bool enabled;
 bool bar_drawn;
 BarStyle current_style;
 int16_t current_value;
 
-extern Display display;
-
 void clear() {
   // Clear scale
   display.fillRect(BAR_OFFSET_X, SCALE_OFFSET_Y, BAR_MAX_WIDTH, SCALE_HEIGHT,
-               LCD_BLACK);
+                   LCD_BLACK);
   // Clear bar
   display.fillRect(BAR_OFFSET_X, BAR_OFFSET_Y, BAR_MAX_WIDTH, BAR_HEIGHT,
-               LCD_BLACK);
+                   LCD_BLACK);
   bar_drawn = false;
   current_value = 0;
 }
@@ -117,14 +119,14 @@ void drawBar(int16_t value) {
   bar_drawn = true;
 }
 
-void enableBar() {
+void enable() {
   enabled = true;
   current_value = 0;
   drawScale(FULLSCALE);
   drawBar(0);
 }
 
-void disableBar() {
+void disable() {
   enabled = false;
   clear();
 }
@@ -142,3 +144,5 @@ void setValue(BarStyle style, int16_t value) {
     setStyle(style);
   drawBar(value);
 }
+
+} // namespace

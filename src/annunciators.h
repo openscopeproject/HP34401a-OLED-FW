@@ -2,7 +2,10 @@
 #define __ANNUNCIATORS_H
 #include "Arduino.h"
 
-void updateAnnunciators(uint16_t state);
+namespace Annunciators {
+
+void update(uint16_t state);
 void toggleShift(void);
+}
 
 #endif

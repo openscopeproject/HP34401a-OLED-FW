@@ -11,9 +11,11 @@ on both input and output data lines of the bus at the same time.
 
 #include "Arduino.h"
 
+namespace Decoder {
+
 void startSniffing();
-void sckInterrupt();
-void fpsInterrupt();
 void process();
+
+}
 
 #endif
