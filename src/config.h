@@ -3,7 +3,7 @@ This file contains configuration constants.
 */
 #ifndef __CONFIG_H
 
-//#define DEBUG
+#define DEBUG
 
 #define MAX_SCK_DELAY 1500 // 1.5ms should be plenty for 100khz clock
 

@@ -5,7 +5,9 @@
 namespace Annunciators {
 
 void update(uint16_t state);
-void toggleShift(void);
+void toggleShift();
+void clearShift();
+
 }
 
 #endif

@@ -45,11 +45,11 @@ void update(uint16_t state) {
     diff >>= 1;
     tstate >>= 1;
   }
-  last_state = state;
+  last_state = (state & 0xF7FF) | (last_state & 0x800);
 }
 
 void toggleShift() {
-  display.setTextSize(2);
+  display.setTextSize(GLYPH_FONT_SIZE);
   display.setTextColor(LCD_LIGHT_GRAY, LCD_BLACK);
   display.setCursor(X_OFFSET + 11 * X_MULT, Y_OFFSET);
   if (last_state & (1 << 11)) {
@@ -57,7 +57,13 @@ void toggleShift() {
   } else {
     display.print(annunciators_text[11]);
   }
-  last_state ^= 1 << 11;
+  last_state ^= 0x800;
+}
+
+void clearShift() {
+  if (last_state & 0x800) {
+    toggleShift();
+  }
 }
 
 } // namespace
