@@ -14,8 +14,15 @@ bool need_reset = true;
 char message[15];
 uint16_t blinking_chars;
 uint8_t blinking_state;
+volatile bool process_blink;
 
 void blinkInterrupt() {
+  process_blink = true;
+}
+
+void process() {
+  if (!process_blink) return;
+  process_blink = false;
   blinking_state = 1 - blinking_state;
   if (blinking_state) {
     display.setTextColor(LCD_DARK_GREY, LCD_BLACK);

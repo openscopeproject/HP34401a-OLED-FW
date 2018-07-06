@@ -109,6 +109,7 @@ void process() {
     digitalWrite(LED_BUILTIN, led_state = 1 - led_state);
     byte_not_read = false;
   }
+  Eventhandler::process();
   if (!byte_ready)
     return;
 

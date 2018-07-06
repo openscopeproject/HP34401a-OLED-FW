@@ -5,6 +5,7 @@
 namespace Eventhandler {
 
 void setup();
+void process();
 void messageByte(uint8_t byte);
 void annunciators(uint8_t h, uint8_t l);
 void control(uint8_t h, uint8_t l);
