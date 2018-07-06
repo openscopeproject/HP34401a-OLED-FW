@@ -50,13 +50,14 @@ void setup() {
   pinMode(PB13, INPUT);
   pinMode(PB14, INPUT);
   pinMode(PB15, INPUT);
+  Timer4.setMode(TIMER_CH4, TIMER_OUTPUT_COMPARE);
+  Timer4.setPeriod(1000000);       // in microseconds
+  Timer4.setCompare(TIMER_CH4, 1);
+  Timer4.attachInterrupt(TIMER_CH4, &fpsInterrupt);
+  Eventhandler::setup();
 }
 
 void startSniffing() {
-  Timer4.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
-  Timer4.setPeriod(1000000);       // in microseconds
-  Timer4.setCompare(TIMER_CH1, 1); // overflow might be small
-  Timer4.attachInterrupt(TIMER_CH1, &fpsInterrupt);
   attachInterrupt(PB13, &sckInterrupt, RISING);
 }
 

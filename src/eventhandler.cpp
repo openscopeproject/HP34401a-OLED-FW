@@ -6,15 +6,49 @@
 
 extern Display display;
 char dbg_msg[100];
-
 namespace Eventhandler {
 
 uint8_t printed;
 bool need_reset = true;
+char message[15];
+uint16_t blinking_chars;
+uint8_t blinking_state;
 
-void print(char c) {
+void blinkInterrupt() {
+  blinking_state = 1 - blinking_state;
+  if (blinking_state) {
+    display.setTextColor(LCD_DARK_GREY, LCD_BLACK);
+  } else {
+    display.setTextColor(LCD_WHITE, LCD_BLACK);
+  }
+  display.setTextSize(MAIN_FONT_SIZE);
+  int c = 0;
+  for (int i = 0; message[i] != 0; i++) {
+    if (message[i] == '.' || message[i] == ',' || message[i] == ':') {
+      // skip over punctuation
+      continue;
+    }
+    if (blinking_chars & (1 << c)) {
+      display.setCursor(TXTX + i * (MAIN_FONT_SIZE * 6), TXTY);
+      display.print(message[i]);
+    }
+    c++;
+  }
+}
+
+void setup() {
+  Timer3.setMode(TIMER_CH3, TIMER_OUTPUT_COMPARE);
+  // Value carefully hand matched by nude virgins to
+  // the original blinking rate of my 34401a
+  Timer3.setPeriod(272511);
+  Timer3.setCompare(TIMER_CH3, 1);
+  Timer3.attachInterrupt(TIMER_CH3, &blinkInterrupt);
+  Timer3.pause();
+}
+
+inline void print(char c) {
   display.print(c);
-  printed++;
+  message[printed++] = c;
 #ifdef DEBUG
   Serial.print(c);
 #endif
@@ -23,6 +57,8 @@ void print(char c) {
 void messageByte(uint8_t byte) {
   if (need_reset) {
     printed = 0;
+    blinking_chars = 0;
+    Timer3.pause();
     display.setCursor(TXTX, TXTY);
     display.setTextColor(LCD_WHITE, LCD_BLACK);
     display.setTextSize(MAIN_FONT_SIZE);
@@ -37,6 +73,7 @@ void messageByte(uint8_t byte) {
     break;
   case 0x8d:
   // special semicolon that blinks previous char?
+    blinking_chars |= 1 << (printed - 1);
   case 0x8c:
     print(':');
     break;
@@ -45,8 +82,12 @@ void messageByte(uint8_t byte) {
     break;
   case 0x00:
     // end of message
+    message[printed] = 0;
     for (int i = 0; i < 14 - printed; i++) {
       display.print(" ");
+    }
+    if (blinking_chars) {
+      Timer3.resume();
     }
     need_reset = true;
 #ifdef DEBUG
@@ -73,6 +114,60 @@ void control(uint8_t h, uint8_t l) {
   sprintf(dbg_msg, "Control: %02x%02x", h, l);
   Serial.println(dbg_msg);
 #endif
+  uint16_t ctrl = h;
+  ctrl = (ctrl << 8) + l;
+  switch (ctrl) {
+  case 0x0049: // blink 1st char
+    blinking_chars |= 0x1;
+    break;
+  case 0x7149: // blink 2nd char
+    blinking_chars |= 0x2;
+    break;
+  case 0x6249: // blink 3rd char
+    blinking_chars |= 0x4;
+    break;
+  case 0x1349: // blink 4th char
+    blinking_chars |= 0x8;
+    break;
+  case 0x5449: // blink 5th char
+    blinking_chars |= 0x10;
+    break;
+  case 0x2549: // blink 6th char
+    blinking_chars |= 0x20;
+    break;
+  case 0x3649: // blink 7th char
+    blinking_chars |= 0x40;
+    break;
+  case 0x4749: // blink 8th char
+    blinking_chars |= 0x80;
+    break;
+  case 0x3849: // blink 9th char
+    blinking_chars |= 0x100;
+    break;
+  case 0x4949: // blink 10th char
+    blinking_chars |= 0x200;
+    break;
+  case 0x5A49: // blink 11th char
+    blinking_chars |= 0x400;
+    break;
+  case 0x2B49: // blink 12th char
+    blinking_chars |= 0x800;
+    break;
+  case 0x2000: // power on
+  case 0x712B: // menu enter
+  case 0x0054: // low brightness
+  case 0x6254: // high brightness
+  case 0x002B: // exit menus
+  case 0x1d00: // unknown
+    break;
+  default:
+#ifdef DEBUG
+    Serial.println("UNKNOWN CONTROL MESSAGE");
+#endif
+  }
+  if (blinking_chars) {
+    Timer3.resume();
+  }
 }
 
 void button(uint8_t h, uint8_t l) {
