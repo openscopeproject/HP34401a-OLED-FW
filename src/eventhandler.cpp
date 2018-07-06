@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "annunciators.h"
+#include "bargraph.h"
 #include "config.h"
 #include "display.h"
 #include "eventhandler.h"
@@ -22,8 +23,8 @@ void blinkInterrupt() {
     display.setTextColor(LCD_WHITE, LCD_BLACK);
   }
   display.setTextSize(MAIN_FONT_SIZE);
-  int c = 0;
-  for (int i = 0; message[i] != 0; i++) {
+  uint8_t c = 0;
+  for (uint8_t i = 0; message[i] != 0; i++) {
     if (message[i] == '.' || message[i] == ',' || message[i] == ':') {
       // skip over punctuation
       continue;
@@ -72,7 +73,7 @@ void messageByte(uint8_t byte) {
     print(',');
     break;
   case 0x8d:
-  // special semicolon that blinks previous char?
+    // special semicolon that blinks previous char?
     blinking_chars |= 1 << (printed - 1);
   case 0x8c:
     print(':');
@@ -153,12 +154,16 @@ void control(uint8_t h, uint8_t l) {
   case 0x2B49: // blink 12th char
     blinking_chars |= 0x800;
     break;
-  case 0x2000: // power on
   case 0x712B: // menu enter
+    Bargraph::disable();
+    break;
+  case 0x002B: // exit menus
+    Bargraph::enable();
+    break;
   case 0x0054: // low brightness
   case 0x6254: // high brightness
-  case 0x002B: // exit menus
   case 0x1d00: // unknown
+  case 0x8000: // unknown
     break;
   default:
 #ifdef DEBUG
