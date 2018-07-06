@@ -58,10 +58,13 @@ void fpsInterrupt() {
   fpsc = 0;
 }
 
-void startSniffing() {
+void setup() {
   pinMode(PB13, INPUT);
   pinMode(PB14, INPUT);
   pinMode(PB15, INPUT);
+}
+
+void startSniffing() {
   Timer4.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
   Timer4.setPeriod(1000000);       // in microseconds
   Timer4.setCompare(TIMER_CH1, 1); // overflow might be small

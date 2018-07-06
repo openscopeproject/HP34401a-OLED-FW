@@ -13,6 +13,7 @@ on both input and output data lines of the bus at the same time.
 
 namespace Decoder {
 
+void setup();
 void startSniffing();
 void process();
 

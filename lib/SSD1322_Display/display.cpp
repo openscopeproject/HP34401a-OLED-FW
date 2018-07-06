@@ -41,9 +41,9 @@
 uint8_t framebuffer[256 * 64 / 2] = {0};
 
 void displaySetup() {
-  // Configure pins
-  GPIOB->regs->CRL = 0x33333333;
-  GPIOB->regs->CRH = 0x33333333;
+  // Configure control pins as outputs
+  GPIOB->regs->CRL = (GPIOB->regs->CRL & 0x000FFFFF) | 0x33300000;
+  GPIOB->regs->CRH = (GPIOB->regs->CRH & 0xFFFFFF00) | 0x00000033;
 }
 
 Display::Display() : Adafruit_GFX(LCD_DIMENSION_X, LCD_DIMENSION_Y) {}
