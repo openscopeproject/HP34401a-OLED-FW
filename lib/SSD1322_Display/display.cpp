@@ -172,6 +172,48 @@ void Display::setAddrWindow(int16_t x, int16_t y, int16_t x1, int16_t y1) {
   WriteCmdParam2(_MP, y, y1);
 }
 
+void Display::pushPixels(int16_t x, int16_t y, int16_t w, int16_t h,
+                         const uint8_t *data, uint8_t c) {
+  if (x + w >= width() || y + h >= height())
+    return;
+  CS_ACTIVE;
+  setAddrWindow(x, y, x + w - 1, y + h - 1);
+  WriteCmd(_MW);
+  uint16_t p = (256 * y + x) / 2;
+  p = p & ~1;
+  CD_DATA;
+  for (int i = 0; i < h; i++) {
+    uint16_t p2 = p + 128 * i;
+    uint16_t p3 = ((w + 7) / 8) * i;
+    for (int j = x / 4; j <= (x + w - 1) / 4; j++) {
+      uint8_t k = j * 4;
+      uint8_t color;
+      if (k >= x && k < x + w) {
+        color = (data[p3 + (k - x)/8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
+        framebuffer[p2] = (framebuffer[p2] & 0x0F) | (color << 4);
+      }
+      k++;
+      if (k >= x && k < x + w) {
+        color = (data[p3 + (k - x)/8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
+        framebuffer[p2] = (framebuffer[p2] & 0xF0) | color;
+      }
+      write8(framebuffer[p2++]);
+      k++;
+      if (k >= x && k < x + w) {
+        color = (data[p3 + (k - x)/8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
+        framebuffer[p2] = (framebuffer[p2] & 0x0F) | (color << 4);
+      }
+      k++;
+      if (k >= x && k < x + w) {
+        color = (data[p3 + (k - x)/8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
+        framebuffer[p2] = (framebuffer[p2] & 0xF0) | color;
+      }
+      write8(framebuffer[p2++]);
+    }
+  }
+  CS_IDLE;
+}
+
 static void init_table(const uint8_t *table, int16_t size) {
   uint16_t p = 0;
   uint8_t dat[24];

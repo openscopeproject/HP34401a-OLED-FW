@@ -69,6 +69,7 @@ public:
     fillRect(x, y, w, 1, color);
   }
   void setAddrWindow(int16_t x, int16_t y, int16_t x1, int16_t y1);
+  void pushPixels(int16_t x, int16_t y, int16_t w, int16_t h, const uint8_t *data, uint8_t c);
   virtual void startWrite(void);
   virtual void endWrite(void);
 

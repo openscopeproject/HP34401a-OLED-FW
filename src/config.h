@@ -4,19 +4,21 @@ This file contains configuration constants.
 #ifndef __CONFIG_H
 
 #define DEBUG
+//#define ANNUNCIATORS_DEBUG
 
 #define MAX_SCK_DELAY 1500 // 1.5ms should be plenty for 100khz clock
 
 #define TXTX 2
-#define TXTY 10
+#define TXTY 12
 #define MAIN_FONT_SIZE 3
 #define FPSX 240
 #define FPSY 0
 
 // Annunciators and glyphs
 #define X_OFFSET 0
-#define X_MULT 20
-#define Y_OFFSET 38
+#define X_MULT 34
+#define Y_OFFSET_HIGH 0
+#define Y_OFFSET_LOW 38
 #define GLYPH_X_OFFSET 200
 #define GLYPH_Y_OFFSET 20
 #define GLYPH_Y_MULT 10
