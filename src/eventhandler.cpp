@@ -182,6 +182,24 @@ void control(uint8_t h, uint8_t l) {
   }
 }
 
+/*
+Button codes:
+            alone       with shift
+DC V        5b 5b         5b e9
+AC V        9d 5b         9d e9
+Ohm         cf 5b         cf e9
+Freq        e9 5b         e9 e9
+Cont        77 5b         77 e9
+Null        7d 5b         7d e9
+MinMax      5b 9d         5b bb
+Left        9d 9d         9d bb
+Right       cf 9d         cf bb
+Down        e9 9d         e9 bb
+Up          bb 9d         bb bb
+AutoMan     7d 9d         7d bb
+Single      5b cf         5b 7d
+Shift       9d cf         9d cf
+*/
 void button(uint8_t h, uint8_t l) {
 #ifdef DEBUG
   sprintf(dbg_msg, "Button: %02x %02x", h, l);
