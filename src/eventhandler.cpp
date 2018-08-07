@@ -176,6 +176,7 @@ void control(uint8_t h, uint8_t l) {
 #ifdef DEBUG
     Serial.println("UNKNOWN CONTROL MESSAGE");
 #endif
+    break;
   }
   if (blinking_chars) {
     Timer3.resume();

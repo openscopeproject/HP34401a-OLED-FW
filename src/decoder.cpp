@@ -4,6 +4,7 @@
 #include "decoder.h"
 #include "eventhandler.h"
 
+// PB12 - INT
 // PB13 - SCK
 // PB14 - MISO
 // PB15 - MOSI
@@ -47,6 +48,7 @@ void fpsInterrupt() {
 }
 
 void setup() {
+  pinMode(PB12, INPUT);
   pinMode(PB13, INPUT);
   pinMode(PB14, INPUT);
   pinMode(PB15, INPUT);

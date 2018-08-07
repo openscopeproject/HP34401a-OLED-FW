@@ -1,8 +1,8 @@
 #include "display.h"
 
-#ifndef pgm_read_byte
-#define pgm_read_byte(addr) (*(const unsigned char *)(addr))
-#endif
+#define COLUMN_ADDR_CMD 0x15 // Set column address
+#define PAGE_ADDR_CMD 0x75   // Set page address
+#define START_WRITE_CMD 0x5C // Start write
 
 #define SET_WRITE_DIRECTION()                                                  \
   { GPIOA->regs->CRL = 0x33333333; }
@@ -41,9 +41,10 @@
 uint8_t framebuffer[256 * 64 / 2] = {0};
 
 void displaySetup() {
-  // Configure control pins as outputs
-  GPIOB->regs->CRL = (GPIOB->regs->CRL & 0x000FFFFF) | 0x33300000;
-  GPIOB->regs->CRH = (GPIOB->regs->CRH & 0xFFFFFF00) | 0x00000033;
+  // Configure control pins as outputs     76543210      76543210
+  GPIOB->regs->CRL = (GPIOB->regs->CRL & 0xFFFFF000) | 0x00000333;
+  //                                       54321098      54321098
+  GPIOB->regs->CRH = (GPIOB->regs->CRH & 0xFFFF00FF) | 0x00003300;
 }
 
 Display::Display() : Adafruit_GFX(LCD_DIMENSION_X, LCD_DIMENSION_Y) {}
@@ -86,27 +87,32 @@ void Display::drawPixel(int16_t x, int16_t y, uint16_t color) {
   // MCUFRIEND just plots at edge if you try to write outside of the box:
   if (x < 0 || y < 0 || x >= width() || y >= height())
     return;
+  if (rotation) {
+    x = _width - x - 1;
+    y = _height - y - 1;
+  }
   uint8_t _x = PANEL_OFFSET + x / 4;
-  WriteCmdParam2(_MC, _x, _x);
-  WriteCmdParam2(_MP, y, y);
+  WriteCmdParam2(COLUMN_ADDR_CMD, _x, _x);
+  WriteCmdParam2(PAGE_ADDR_CMD, y, y);
   uint16_t p = (256 * y + x) / 2;
   if (x & 1) {
     framebuffer[p] = (framebuffer[p] & 0xF0) | color;
   } else {
     framebuffer[p] = (framebuffer[p] & 0x0F) | (color << 4);
   }
-  WriteCmdParam2(_MW, framebuffer[p & ~1], framebuffer[p | 1]);
+  WriteCmdParam2(START_WRITE_CMD, framebuffer[p & ~1], framebuffer[p | 1]);
 }
 
-void Display::setRotation(uint8_t r) {
-  // ignore rotation for now
-  _MC = 0x15; // Set column address
-  _MP = 0x75; // Set page address
-  _MW = 0x5C; // Start write
-}
+void Display::setRotation(uint8_t r) { rotation = r; }
 
 void Display::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
                        uint16_t color) {
+  if (rotation) {
+    x = _width - x;
+    y = _height - y;
+    x -= w;
+    y -= h;
+  }
   int16_t end;
   if (w < 0) {
     w = -w;
@@ -131,7 +137,7 @@ void Display::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
 
   CS_ACTIVE;
   setAddrWindow(x, y, x + w - 1, y + h - 1);
-  WriteCmd(_MW);
+  WriteCmd(START_WRITE_CMD);
   CD_DATA;
   uint16_t p = (256 * y + x) / 2;
   p = p & ~1;
@@ -168,17 +174,23 @@ void Display::invertDisplay(bool i) {
 }
 
 void Display::setAddrWindow(int16_t x, int16_t y, int16_t x1, int16_t y1) {
-  WriteCmdParam2(_MC, PANEL_OFFSET + x / 4, PANEL_OFFSET + x1 / 4);
-  WriteCmdParam2(_MP, y, y1);
+  WriteCmdParam2(COLUMN_ADDR_CMD, PANEL_OFFSET + x / 4, PANEL_OFFSET + x1 / 4);
+  WriteCmdParam2(PAGE_ADDR_CMD, y, y1);
 }
 
 void Display::pushPixels(int16_t x, int16_t y, int16_t w, int16_t h,
                          const uint8_t *data, uint8_t c) {
-  if (x + w >= width() || y + h >= height())
+  if (rotation) {
+    x = _width - x;
+    y = _height - y;
+    x -= w;
+    y -= h;
+  }
+  if (x + w > width() || y + h > height())
     return;
   CS_ACTIVE;
   setAddrWindow(x, y, x + w - 1, y + h - 1);
-  WriteCmd(_MW);
+  WriteCmd(START_WRITE_CMD);
   uint16_t p = (256 * y + x) / 2;
   p = p & ~1;
   CD_DATA;
@@ -189,23 +201,23 @@ void Display::pushPixels(int16_t x, int16_t y, int16_t w, int16_t h,
       uint8_t k = j * 4;
       uint8_t color;
       if (k >= x && k < x + w) {
-        color = (data[p3 + (k - x)/8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
+        color = (data[p3 + (k - x) / 8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
         framebuffer[p2] = (framebuffer[p2] & 0x0F) | (color << 4);
       }
       k++;
       if (k >= x && k < x + w) {
-        color = (data[p3 + (k - x)/8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
+        color = (data[p3 + (k - x) / 8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
         framebuffer[p2] = (framebuffer[p2] & 0xF0) | color;
       }
       write8(framebuffer[p2++]);
       k++;
       if (k >= x && k < x + w) {
-        color = (data[p3 + (k - x)/8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
+        color = (data[p3 + (k - x) / 8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
         framebuffer[p2] = (framebuffer[p2] & 0x0F) | (color << 4);
       }
       k++;
       if (k >= x && k < x + w) {
-        color = (data[p3 + (k - x)/8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
+        color = (data[p3 + (k - x) / 8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
         framebuffer[p2] = (framebuffer[p2] & 0xF0) | color;
       }
       write8(framebuffer[p2++]);
@@ -260,6 +272,5 @@ void Display::begin() {
   init_table(table8_ads, sizeof(table8_ads)); // can change PIXFMT
   init_table(wake_on, sizeof(wake_on));
   CS_IDLE;
-  setRotation(0);
   invertDisplay(false);
 }

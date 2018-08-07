@@ -18,15 +18,15 @@
 
 // Control pins
 #define LCD_RD_PORT GPIOB
-#define LCD_RD_PIN 5
+#define LCD_RD_PIN 0
 #define LCD_WR_PORT GPIOB
-#define LCD_WR_PIN 6
+#define LCD_WR_PIN 1
 #define LCD_RS_PORT GPIOB
-#define LCD_RS_PIN 7
+#define LCD_RS_PIN 2
 #define LCD_CS_PORT GPIOB
-#define LCD_CS_PIN 8
+#define LCD_CS_PIN 11
 #define LCD_RST_PORT GPIOB
-#define LCD_RST_PIN 9
+#define LCD_RST_PIN 10
 // Data pins are GPIOA[0-7]
 
 #define PIN_LOW(port, pin) ((port)->regs->BRR = 1 << (pin))
@@ -74,7 +74,7 @@ public:
   virtual void endWrite(void);
 
 private:
-  uint16_t _MC, _MP, _MW;
+  uint8_t rotation = 0;
 };
 
 #endif /* __DISPLAY_H */
