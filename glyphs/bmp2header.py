@@ -3,6 +3,9 @@ from glob import glob
 
 h = open('glyphs.h', 'w')
 
+# Set to false for non-flipped display
+FLIP_IMAGE = True
+
 h.write("""\
 #ifndef __GLYPHS_H
 #define __GLYPHS_H
@@ -36,7 +39,11 @@ def process_file(name):
   h.write('  {}, {},\n'.format(width, height))
   h.write('  {\n')
   for i in xrange(height):
-    row = image_data[width * i:width * (i + 1)]
+    if FLIP_IMAGE:
+      row = image_data[width * (height - i - 1):width * (height - i)]
+      row.reverse()
+    else:
+      row = image_data[width * i:width * (i + 1)]
     data_bytes = [convert_slice(row[8 * i:8 * i + 8]) for i in
                   xrange(bytes_per_row)]
     data_bytes_hex = ['0x%02x' % b for b in data_bytes]

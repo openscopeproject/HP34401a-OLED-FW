@@ -139,29 +139,29 @@ void Display::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   setAddrWindow(x, y, x + w - 1, y + h - 1);
   WriteCmd(START_WRITE_CMD);
   CD_DATA;
-  uint16_t p = (256 * y + x) / 2;
-  p = p & ~1;
+  uint16_t p_fb0 = (256 * y + x) / 2;
+  p_fb0 &= ~1;
   for (int i = 0; i < h; i++) {
-    uint16_t p2 = p + 128 * i;
+    uint16_t p_fb = p_fb0 + 128 * i;
     for (int j = x / 4; j <= (x + w - 1) / 4; j++) {
       uint8_t k = j * 4;
       if (k >= x && k < x + w) {
-        framebuffer[p2] = (framebuffer[p2] & 0x0F) | (color << 4);
+        framebuffer[p_fb] = (framebuffer[p_fb] & 0x0F) | (color << 4);
       }
       k++;
       if (k >= x && k < x + w) {
-        framebuffer[p2] = (framebuffer[p2] & 0xF0) | color;
+        framebuffer[p_fb] = (framebuffer[p_fb] & 0xF0) | color;
       }
-      write8(framebuffer[p2++]);
+      write8(framebuffer[p_fb++]);
       k++;
       if (k >= x && k < x + w) {
-        framebuffer[p2] = (framebuffer[p2] & 0x0F) | (color << 4);
+        framebuffer[p_fb] = (framebuffer[p_fb] & 0x0F) | (color << 4);
       }
       k++;
       if (k >= x && k < x + w) {
-        framebuffer[p2] = (framebuffer[p2] & 0xF0) | color;
+        framebuffer[p_fb] = (framebuffer[p_fb] & 0xF0) | color;
       }
-      write8(framebuffer[p2++]);
+      write8(framebuffer[p_fb++]);
     }
   }
   CS_IDLE;
@@ -191,36 +191,37 @@ void Display::pushPixels(int16_t x, int16_t y, int16_t w, int16_t h,
   CS_ACTIVE;
   setAddrWindow(x, y, x + w - 1, y + h - 1);
   WriteCmd(START_WRITE_CMD);
-  uint16_t p = (256 * y + x) / 2;
-  p = p & ~1;
+  uint16_t p_fb0 = (256 * y + x) / 2;
+  uint16_t p_fb, p3;
+  p_fb0 &= ~1;
   CD_DATA;
   for (int i = 0; i < h; i++) {
-    uint16_t p2 = p + 128 * i;
-    uint16_t p3 = ((w + 7) / 8) * i;
+    p_fb = p_fb0 + 128 * i;
+    p3 = ((w + 7) / 8) * i;
     for (int j = x / 4; j <= (x + w - 1) / 4; j++) {
       uint8_t k = j * 4;
       uint8_t color;
       if (k >= x && k < x + w) {
         color = (data[p3 + (k - x) / 8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
-        framebuffer[p2] = (framebuffer[p2] & 0x0F) | (color << 4);
+        framebuffer[p_fb] = (framebuffer[p_fb] & 0x0F) | (color << 4);
       }
       k++;
       if (k >= x && k < x + w) {
         color = (data[p3 + (k - x) / 8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
-        framebuffer[p2] = (framebuffer[p2] & 0xF0) | color;
+        framebuffer[p_fb] = (framebuffer[p_fb] & 0xF0) | color;
       }
-      write8(framebuffer[p2++]);
+      write8(framebuffer[p_fb++]);
       k++;
       if (k >= x && k < x + w) {
         color = (data[p3 + (k - x) / 8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
-        framebuffer[p2] = (framebuffer[p2] & 0x0F) | (color << 4);
+        framebuffer[p_fb] = (framebuffer[p_fb] & 0x0F) | (color << 4);
       }
       k++;
       if (k >= x && k < x + w) {
         color = (data[p3 + (k - x) / 8] & (0x80 >> ((k - x) & 7))) ? c : 0x0;
-        framebuffer[p2] = (framebuffer[p2] & 0xF0) | color;
+        framebuffer[p_fb] = (framebuffer[p_fb] & 0xF0) | color;
       }
-      write8(framebuffer[p2++]);
+      write8(framebuffer[p_fb++]);
     }
   }
   CS_IDLE;
