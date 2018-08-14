@@ -185,21 +185,21 @@ void control(uint8_t h, uint8_t l) {
 
 /*
 Button codes:
-            alone       with shift
-DC V        5b 5b         5b e9
-AC V        9d 5b         9d e9
-Ohm         cf 5b         cf e9
-Freq        e9 5b         e9 e9
-Cont        77 5b         77 e9
-Null        7d 5b         7d e9
-MinMax      5b 9d         5b bb
-Left        9d 9d         9d bb
-Right       cf 9d         cf bb
-Down        e9 9d         e9 bb
-Up          bb 9d         bb bb
-AutoMan     7d 9d         7d bb
-Single      5b cf         5b 7d
-Shift       9d cf         9d cf
+            alone             with shift
+DC V        0x5b 0x5b         0x5b 0xe9
+AC V        0x9d 0x5b         0x9d 0xe9
+Ohm         0xcf 0x5b         0xcf 0xe9
+Freq        0xe9 0x5b         0xe9 0xe9
+Cont        0x77 0x5b         0x77 0xe9
+Null        0x7d 0x5b         0x7d 0xe9
+MinMax      0x5b 0x9d         0x5b 0xbb
+Left        0x9d 0x9d         0x9d 0xbb
+Right       0xcf 0x9d         0xcf 0xbb
+Down        0xe9 0x9d         0xe9 0xbb
+Up          0xbb 0x9d         0xbb 0xbb
+AutoMan     0x7d 0x9d         0x7d 0xbb
+Single      0x5b 0xcf         0x5b 0x7d
+Shift       0x9d 0xcf         0x9d 0xcf
 */
 void button(uint8_t h, uint8_t l) {
 #ifdef DEBUG
