@@ -5,7 +5,10 @@
 2. Install Adafruit_GFX library. Run this in root directory of this repository:
    ```shell
    pio lib install 13
+   find . -type f -name 'Adafruit_SPITFT*' -delete
    ```
+   Need to delete SPITFT stuff because it pulls another dependency
+   we don't need.
 3. Compile:
    ```shell
    pio run

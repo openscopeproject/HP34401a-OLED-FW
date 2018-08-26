@@ -36,9 +36,11 @@ cache:
 install:
     - pip install -U platformio
     - platformio update
-    - platformio lib install 13
 
 script:
+    - cd "$TRAVIS_BUILD_DIR"
+    - platformio lib install 13
+    - find . -type f -name 'Adafruit_SPITFT*' -delete
     - platformio run
 
 
