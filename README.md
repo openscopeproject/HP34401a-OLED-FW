@@ -1,5 +1,7 @@
 # HP 34401a 6½ digit multimeter OLED display mod
 
+## Status [![Build Status](https://travis-ci.com/openscopeproject/HP34401a-OLED-FW.svg?branch=master)](https://travis-ci.com/openscopeproject/HP34401a-OLED-FW)
+
 ## About this project
 
 Many of the old meters in 34401a series are still in great working condition,
