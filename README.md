@@ -36,7 +36,10 @@ process a useful fast bargraph feature was added.
 <img src="https://i.imgur.com/bZpQViy.jpg" alt="final design" width="300px"
 href="https://i.imgur.com/bZpQViy.jpg"/>
 
-_Placeholder for finished product pic_
+And this is what final product looks like:
+
+<img src="https://i.imgur.com/FP5pQ6R.jpg" alt="final product" width="300px"
+href="https://i.imgur.com/FP5pQ6R.jpg"/>
 
 
 ### Links
