@@ -131,10 +131,10 @@ void process() {
       break;
     }
     if (buf_len == 2) {
-      if (input_buf[0] == 0x00 && input_buf[1] == 0x7f) {
+      if (input_buf[0] == 0x00 && (input_buf[1] & 0x7f) == 0x7f) {
         frame_state = MESSAGE;
         break;
-      } else if (input_buf[0] == 0x7f && input_buf[1] == 0x00) {
+      } else if ((input_buf[0] & 0x7f) == 0x7f && input_buf[1] == 0x00) {
         frame_state = ANNUNCIATORS;
         break;
       } else {
