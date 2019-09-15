@@ -6,8 +6,8 @@
 
 // PB12 - INT
 // PB13 - SCK
-// PB14 - MISO
-// PB15 - MOSI
+// PB14 - FRONT PANEL DATA IN
+// PB15 - FRONT PANEL DATA OUT
 
 namespace Decoder {
 

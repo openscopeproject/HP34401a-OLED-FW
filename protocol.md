@@ -1,9 +1,10 @@
 # HP 34401a Front Panel Protocol Details
 
-_Note: all of the below is only verified by author to be accurate for 34401a
-models with old style front panel (MPR 34401-66502, fw version up to 06-04-01).
-Newer versions of the device use updated front panel with some differences,
-however most if not all of the information below should apply as well._
+_Note: there are 2 versions of front panels in 34401a meters, original one
+(MPR 34401-66502, fw version up to 06-04-01) and an updated one with slight modifications.
+Protocols for both are very similar except for headers of some frames. Initial investigation
+into this matter was performed using a meter with original front panel. Differences between
+old and new panels are only the headers of text and annunciator frames, see details below._
 
 ### SPI but with a twist
 
@@ -53,6 +54,8 @@ text portion of the display. It's format is as follows:
 | SI   | 0x00 0x7f | S0...SN 0x00     | 0x00 |
 | SO   | 0x## 0x## | 0x##...0x## 0x## | 0xbb |
 
+For meters with newer front panels the header is slightly different: `0x00 0xff`.
+
 _Note: here and below `0x##` is used to indicate that byte doesn't matter.
 However front panel seems to always respond with `0xdd` in such cases._
 
@@ -82,6 +85,8 @@ Frame format:
 |------|-----------|-----------|------|
 | SI   | 0x7f 0x00 | B0   B1   | 0x00 |
 | SO   | 0x## 0x## | 0x## 0x## | 0xbb |
+
+For meters with newer front panels the header is slightly different: `0xff 0x00`.
 
 Bitmask:
 
@@ -138,8 +143,8 @@ Unlike other frames header is only one byte:
 
 | Line | Header | Data      | Ack  |
 |------|--------|-----------|------|
-| SI   | 0x00   | 0x## 0x## | 0x00 |
-| SO   | 0x77   | B0 B1     | 0xbb |
+| SI   | 0x00   | 0x## 0x## | 0x66 |
+| SO   | 0x77   | B0 B1     | 0x## |
 
 _Note: CPU seems to send 0x00 bytes during data transfer from FP, although it
 likely does not matter._
