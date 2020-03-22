@@ -39,7 +39,7 @@ install:
 
 script:
     - cd "$TRAVIS_BUILD_DIR"
-    - platformio lib install 13
+    - platformio lib install
     - find . -type f -name 'Adafruit_SPITFT*' -delete
     - platformio run
 
