@@ -41,6 +41,14 @@ And this is what final product looks like:
 <img src="https://i.imgur.com/FP5pQ6R.jpg" alt="final product" width="300px"
 href="https://i.imgur.com/FP5pQ6R.jpg"/>
 
+### ⚠️ Warning
+<div style="background-color: #fff3cd; color: #856404; padding: 2px 4px; border-radius: 3px; border: 1px solid #ffeeba;">
+Connecting a mains powered PC to the USB interface makes the front end of the meter
+no longer floating. Conducting measurements while the meter is connected can lead to
+unintended pyrotechnical special effects and magic smoke escaping.
+For safe operation make sure to only use the USB interface for flashing the firmware
+and disconnect the meter from your PC before performing any measurements.
+</div>
 
 ### Links
 
