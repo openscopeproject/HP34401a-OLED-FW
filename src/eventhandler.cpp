@@ -6,12 +6,15 @@
 #include "eventhandler.h"
 
 extern Display display;
+#ifdef DEBUG
 char dbg_msg[100];
+#endif
+
 namespace Eventhandler {
 
 uint8_t printed;
 bool need_reset = true;
-char message[15];
+char message[15] = {0};
 uint16_t blinking_chars;
 uint8_t blinking_state;
 volatile bool process_blink;
@@ -21,7 +24,8 @@ void blinkInterrupt() {
 }
 
 void process() {
-  if (!process_blink) return;
+  if (!process_blink)
+    return;
   process_blink = false;
   blinking_state = 1 - blinking_state;
   if (blinking_state) {
@@ -37,11 +41,27 @@ void process() {
       continue;
     }
     if (blinking_chars & (1 << c)) {
-      display.setCursor(TXTX + i * (MAIN_FONT_SIZE * 6), TXTY);
+      display.setCursor(TXTX + i * MAIN_CHAR_WIDTH, TXTY);
       display.print(message[i]);
     }
     c++;
   }
+}
+
+void blankRestOfLine() {
+  // Draw a black rectangle covering the characters after `printed`
+  // Protect against overflow
+  if (printed >= 14)
+    return;
+  uint16_t width = 0;
+  while (message[printed] != 0) {
+    width += MAIN_CHAR_WIDTH;
+    message[printed] = 0;
+    printed++;
+  }
+  display.fillRect(TXTX + printed * MAIN_CHAR_WIDTH, TXTY,
+                   width, MAIN_CHAR_HEIGHT,
+                   LCD_BLACK);
 }
 
 void setup() {
@@ -55,11 +75,18 @@ void setup() {
 }
 
 inline void print(char c) {
-  display.print(c);
-  message[printed++] = c;
+  if (printed >= 14)
+    return;
 #ifdef DEBUG
   Serial.print(c);
 #endif
+  if (message[printed] == c) {
+    printed++;
+    return;
+  }
+  display.setCursor(TXTX + printed * MAIN_CHAR_WIDTH, TXTY);
+  display.print(c);
+  message[printed++] = c;
 }
 
 void messageByte(uint8_t byte) {
@@ -67,7 +94,6 @@ void messageByte(uint8_t byte) {
     printed = 0;
     blinking_chars = 0;
     Timer3.pause();
-    display.setCursor(TXTX, TXTY);
     display.setTextColor(LCD_WHITE, LCD_BLACK);
     display.setTextSize(MAIN_FONT_SIZE);
     need_reset = false;
@@ -90,10 +116,7 @@ void messageByte(uint8_t byte) {
     break;
   case 0x00:
     // end of message
-    message[printed] = 0;
-    for (int i = 0; i < 14 - printed; i++) {
-      display.print(" ");
-    }
+    blankRestOfLine();
     if (blinking_chars) {
       Timer3.resume();
     }
@@ -225,4 +248,4 @@ void updateFps(uint16_t fps) {
     display.print(fps);
   }
 }
-} // namespace
+} // namespace Eventhandler

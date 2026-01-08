@@ -79,7 +79,9 @@ enum FrameState {
   ANNUNCIATORS, // State is CPU->FP annunciators update frame
   CONTROL,      // State is CPU->FP control frame
   BUTTON        // State is FP->CPU button press frame
-} frame_state = INIT;
+};
+
+FrameState frame_state = INIT;
 
 inline bool lastBytesAreEof() {
   return input_buf[buf_len - 1] == 0x00 && output_buf[buf_len - 1] == 0xbb;

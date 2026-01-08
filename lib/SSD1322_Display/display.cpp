@@ -41,10 +41,17 @@
 uint8_t framebuffer[256 * 64 / 2] = {0};
 
 void displaySetup() {
+#ifdef BREADBOARD
+  // Configure control pins as outputs     76543210      76543210
+  GPIOB->regs->CRL = (GPIOB->regs->CRL & 0x000FFFFF) | 0x33300000;
+  //                                       54321098      54321098
+  GPIOB->regs->CRH = (GPIOB->regs->CRH & 0xFFFFFF00) | 0x00000033;
+#else
   // Configure control pins as outputs     76543210      76543210
   GPIOB->regs->CRL = (GPIOB->regs->CRL & 0xFFFFF000) | 0x00000333;
   //                                       54321098      54321098
   GPIOB->regs->CRH = (GPIOB->regs->CRH & 0xFFFF00FF) | 0x00003300;
+#endif
 }
 
 Display::Display() : Adafruit_GFX(LCD_DIMENSION_X, LCD_DIMENSION_Y) {}

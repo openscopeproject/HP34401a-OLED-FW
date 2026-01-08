@@ -16,6 +16,18 @@
 #define LCD_LIGHT_GRAY 0xA
 #define LCD_WHITE 0xF
 
+#ifdef BREADBOARD
+#define LCD_RD_PORT GPIOB
+#define LCD_RD_PIN 5
+#define LCD_WR_PORT GPIOB
+#define LCD_WR_PIN 6
+#define LCD_RS_PORT GPIOB
+#define LCD_RS_PIN 7
+#define LCD_CS_PORT GPIOB
+#define LCD_CS_PIN 8
+#define LCD_RST_PORT GPIOB
+#define LCD_RST_PIN 9
+#else
 // Control pins
 #define LCD_RD_PORT GPIOB
 #define LCD_RD_PIN 0
@@ -28,6 +40,7 @@
 #define LCD_RST_PORT GPIOB
 #define LCD_RST_PIN 10
 // Data pins are GPIOA[0-7]
+#endif
 
 #define PIN_LOW(port, pin) ((port)->regs->BRR = 1 << (pin))
 #define PIN_HIGH(port, pin) ((port)->regs->BSRR = 1 << (pin))

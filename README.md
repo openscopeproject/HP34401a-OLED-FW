@@ -58,7 +58,7 @@ For compilation and flashing instructions see `howto.md`
 
 [KiCad files](https://github.com/openscopeproject/HP34401a-OLED-HW)
 
-[Bill of materials](https://openscopeproject.org/InteractiveHtmlBomDemo/hp34401a_oled/ibom.html) (see my [plugin for KiCad](https://github.com/openscopeproject/InteractiveHtmlBom) if you want to generate a BOM like this for your project)
+[Bill of materials](https://openscopeproject.org/InteractiveHtmlBomDemo/html/hp34401a_oled.html) (see my [plugin for KiCad](https://github.com/openscopeproject/InteractiveHtmlBom) if you want to generate a BOM like this for your project)
 
 [More pictures and history of progress of this project on EEVBlog](https://www.eevblog.com/forum/repair/hp-34401a-dmm-with-leaking-segments/).
 

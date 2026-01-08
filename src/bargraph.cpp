@@ -56,6 +56,10 @@ void clearBarPortion(uint8_t start, uint8_t width) {
 }
 
 void drawBar(int16_t value) {
+  if (current_value == value) {
+    bar_drawn = true;
+    return;
+  }
   switch (current_style) {
   case POSITIVE: {
     // Scale down 0-1000 to 0-200

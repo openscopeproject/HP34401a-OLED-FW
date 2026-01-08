@@ -10,6 +10,8 @@ This file contains configuration constants.
 #define TXTX 2
 #define TXTY 12
 #define MAIN_FONT_SIZE 3
+#define MAIN_CHAR_WIDTH MAIN_FONT_SIZE*6 // includes the kerning space
+#define MAIN_CHAR_HEIGHT MAIN_FONT_SIZE*8
 #define FPSX 240
 #define FPSY 0
 
